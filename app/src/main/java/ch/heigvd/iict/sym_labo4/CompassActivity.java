@@ -49,14 +49,6 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
 
     }
 
-    /* TODO
-       your activity need to register to accelerometer and magnetometer sensors' updates
-       then you may want to call
-       this.opglr.swapRotMatrix()
-       with the 4x4 rotation matrix, everytime a new matrix is computed
-       more information on rotation matrix can be found on-line:
-       https://developer.android.com/reference/android/hardware/SensorManager.html#getRotationMatrix(float[],%20float[],%20float[],%20float[])
-   */
     @Override
     public void onSensorChanged(SensorEvent event) {
         switch (event.sensor.getType()) {
