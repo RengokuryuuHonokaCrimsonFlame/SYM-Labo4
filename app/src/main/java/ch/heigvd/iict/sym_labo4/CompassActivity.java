@@ -16,6 +16,9 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     private Sensor mMagField;
+    float[] mGravs = new float[3];
+    float[] mGeoMags = new float[3];
+    float[] mRotationM = new float[16];
 
     //opengl
     private OpenGLRenderer  opglr           = null;
@@ -56,9 +59,18 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
    */
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() != Sensor.TYPE_ACCELEROMETER)
-            return;
-        this.opglr.swapRotMatrix(event.values);
+        switch (event.sensor.getType()) {
+            case Sensor.TYPE_ACCELEROMETER:
+                System.arraycopy(event.values, 0, mGravs, 0, 3);
+                break;
+            case Sensor.TYPE_MAGNETIC_FIELD:
+                System.arraycopy(event.values, 0, mGeoMags, 0, 3);
+                break;
+            default:
+                return;
+        }
+        SensorManager.getRotationMatrix(mRotationM, null , mGravs, mGeoMags);
+        this.opglr.swapRotMatrix(mRotationM);
     }
 
     @Override
@@ -69,6 +81,7 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
     protected void onResume() {
         super.onResume();
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(this, mMagField, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     protected void onPause() {
