@@ -16,15 +16,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.lifecycle.ViewModelProviders;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import ch.heigvd.iict.sym_labo4.abstractactivies.BaseTemplateActivity;
 import ch.heigvd.iict.sym_labo4.adapters.ResultsAdapter;
@@ -186,7 +185,7 @@ public class BleActivity extends BaseTemplateActivity {
             // le service "SYM" (UUID: "3c0a1000-281d-4b48-b2a7-f15579a1c38f")
             List<ScanFilter> filters = new ArrayList<>();
             ScanFilter scanFilter = new ScanFilter.Builder()
-                    .setServiceUuid(ParcelUuid.fromString("3c0a1000-281d-4b48-b2a7-f15579a1c38f"))
+                    .setServiceUuid(new ParcelUuid(UUID.fromString("3c0a1000-281d-4b48-b2a7-f15579a1c38f")))
                     .build();
             filters.add(scanFilter);
 
