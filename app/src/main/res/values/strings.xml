@@ -18,4 +18,11 @@
     <string name="ble_sendvalue_title">Envoi de valeur</string>
     <string name="ble_sendvalue_send">Send</string>
 
+    <string name="time">Dernière synchronisation</string>
+    <string name="synchronize">synchroniser</string>
+    <string name="valeur">Envoyer une valeur</string>
+    <string name="envoyer">Envoyer</string>
+    <string name="boutons">Nombre d\'appuis sur un bouton</string>
+    <string name="température">Température</string>
+    <string name="get_temp">Demander</string>
 </resources>

@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Gradle: com.github.hotchemi:permissionsdispatcher-annotation:4.1.0@jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.hotchemi/permissionsdispatcher-annotation/4.1.0/46a9232d432c14682b9981625b3ed209ebc57574/permissionsdispatcher-annotation-4.1.0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.hotchemi/permissionsdispatcher-annotation/4.1.0/52558af6f926b86603eeaac94856f9278b8fe6e8/permissionsdispatcher-annotation-4.1.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.hotchemi/permissionsdispatcher-annotation/4.1.0/36e1bb56fe9383e5801b585b94021655bde6cc5d/permissionsdispatcher-annotation-4.1.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
