@@ -121,14 +121,12 @@ public class BleActivity extends BaseTemplateActivity {
         updateGui();
 
         //events
-        this.scanResults.setOnItemClickListener((AdapterView<?> parent, View view, int position, long id) -> {
-            runOnUiThread(() -> {
-                //we stop scanning
-                scanLeDevice(false);
-                //we connect to the clicked device
-                bleViewModel.connect(((ScanResult)scanResultsAdapter.getItem(position)).getDevice());
-            });
-        });
+        this.scanResults.setOnItemClickListener((AdapterView<?> parent, View view, int position, long id) -> runOnUiThread(() -> {
+            //we stop scanning
+            scanLeDevice(false);
+            //we connect to the clicked device
+            bleViewModel.connect(((ScanResult)scanResultsAdapter.getItem(position)).getDevice());
+        }));
 
         //ble events
         this.bleViewModel.isConnected().observe(this, (isConnected) -> {
@@ -222,6 +220,7 @@ public class BleActivity extends BaseTemplateActivity {
 
             //we scan for any BLE device
             //we don't filter them based on advertised services...
+            //Rappel : Activer Ble et geoloc
             List<ScanFilter> filters = new ArrayList<>();
             ScanFilter scanFilter = new ScanFilter.Builder()
                     .setServiceUuid(new ParcelUuid(UUID.fromString("3c0a1000-281d-4b48-b2a7-f15579a1c38f")))
@@ -236,9 +235,7 @@ public class BleActivity extends BaseTemplateActivity {
             isScanning = true;
 
             //we scan only for 15 seconds
-            handler.postDelayed(() -> {
-                scanLeDevice(false);
-            }, 15*1000L);
+            handler.postDelayed(() -> scanLeDevice(false), 15*1000L);
 
         } else {
             bluetoothScanner.stopScan(leScanCallback);
@@ -252,9 +249,7 @@ public class BleActivity extends BaseTemplateActivity {
         @Override
         public void onScanResult(int callbackType, final ScanResult result) {
             super.onScanResult(callbackType, result);
-            runOnUiThread(() -> {
-                scanResultsAdapter.addDevice(result);
-            });
+            runOnUiThread(() -> scanResultsAdapter.addDevice(result));
         }
     };
 
