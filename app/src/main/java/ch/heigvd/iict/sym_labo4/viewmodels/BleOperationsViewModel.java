@@ -13,6 +13,8 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import java.util.UUID;
+
 import no.nordicsemi.android.ble.BleManager;
 import no.nordicsemi.android.ble.BleManagerCallbacks;
 
@@ -162,16 +164,39 @@ public class BleOperationsViewModel extends AndroidViewModel {
                 mConnection = gatt; //trick to force disconnection
                 Log.d(TAG, "isRequiredServiceSupported - discovered services:");
 
-                /* TODO
-                    - Nous devons vérifier ici que le périphérique auquel on vient de se connecter possède
-                      bien tous les services et les caractéristiques attendues, on vérifiera aussi que les
-                      caractéristiques présentent bien les opérations attendues
-                    - On en profitera aussi pour garder les références vers les différents services et
-                      caractéristiques (déclarés en lignes 33 et 34)
-                 */
-
-                //FIXME si tout est OK, on retourne true, sinon la librairie appelera la méthode onDeviceNotSupported()
-                return false;
+                UUID timeServiceUUID = UUID.fromString("00001805-0000-1000-8000-00805f9b34fb");
+                UUID symServiceUUID = UUID.fromString("3c0a1000-281d-4b48-b2a7-f15579a1c38f ");
+                UUID currentTimeCharUUID = UUID.fromString("00002A2B-0000-1000-8000-00805f9b34f");
+                UUID integerCharUUID = UUID.fromString("3c0a1001-281d-4b48-b2a7-f15579a1c38f");
+                UUID temperatureCharUUID = UUID.fromString("3c0a1002-281d-4b48-b2a7-f15579a1c38f");
+                UUID buttonClickCharUUID = UUID.fromString("3c0a1003-281d-4b48-b2a7-f15579a1c38f");
+                for(BluetoothGattService service : mConnection.getServices()){
+                    if(timeServiceUUID.equals(service.getUuid())){
+                        symService = service;
+                        for(BluetoothGattCharacteristic characteristique : symService.getCharacteristics()){
+                            if(currentTimeCharUUID.equals(characteristique.getUuid()))
+                            {
+                                currentTimeChar = characteristique;
+                            }
+                        }
+                    }else if(symServiceUUID.equals(service.getUuid())){
+                        timeService = service;
+                        for(BluetoothGattCharacteristic characteristique : timeService.getCharacteristics()){
+                            if(integerCharUUID.equals(characteristique.getUuid()))
+                            {
+                                integerChar = characteristique;
+                            }else if(temperatureCharUUID.equals(characteristique.getUuid()))
+                            {
+                                temperatureChar = characteristique;
+                            }else if(buttonClickCharUUID.equals(characteristique.getUuid()))
+                            {
+                                buttonClickChar = characteristique;
+                            }
+                        }
+                    }
+                }
+                return buttonClickChar != null && temperatureChar != null
+                        && integerChar != null && currentTimeChar != null;
             }
 
             @Override
