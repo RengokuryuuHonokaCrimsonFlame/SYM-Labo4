@@ -13,10 +13,13 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
 
 import no.nordicsemi.android.ble.BleManager;
 import no.nordicsemi.android.ble.BleManagerCallbacks;
+import no.nordicsemi.android.ble.data.Data;
 
 public class BleOperationsViewModel extends AndroidViewModel {
 
@@ -27,9 +30,19 @@ public class BleOperationsViewModel extends AndroidViewModel {
 
     //live data - observer
     private final MutableLiveData<Boolean> mIsConnected = new MutableLiveData<>();
+    private final MutableLiveData<Float> mTemperature = new MutableLiveData<>();
+    private final MutableLiveData<Integer> mNbAppuis = new MutableLiveData<>();
+    private final MutableLiveData<Calendar>  mDate = new MutableLiveData<>();
+
     public LiveData<Boolean> isConnected() {
         return mIsConnected;
     }
+
+    public LiveData<Float> getmTemperature() { return mTemperature; }
+
+    public LiveData<Integer> getmNBAppuis() { return mNbAppuis; }
+
+    public LiveData<Calendar> getmDate() { return mDate; }
 
     //references to the Services and Characteristics of the SYM Pixl
     private BluetoothGattService timeService = null, symService = null;
@@ -70,6 +83,7 @@ public class BleOperationsViewModel extends AndroidViewModel {
         vous pouvez placer ici les différentes méthodes permettant à l'utilisateur
         d'interagir avec le périphérique depuis l'activité
      */
+
     public boolean readTemperature() {
         if(!isConnected().getValue() || temperatureChar == null) return false;
         return ble.readTemperature();
@@ -223,12 +237,37 @@ public class BleOperationsViewModel extends AndroidViewModel {
         };
 
         public boolean readTemperature() {
-            /* TODO on peut effectuer ici la lecture de la caractéristique température
-                la valeur récupérée sera envoyée à l'activité en utilisant le mécanisme
-                des MutableLiveData
-                On placera des méthodes similaires pour les autres opérations...
-            */
-            return false; //FIXME
+            if(temperatureChar == null){
+                return false;
+            }
+            readCharacteristic(temperatureChar).with((device, data) -> {
+                data.getIntValue(Data.FORMAT_UINT16, 0);
+            }).enqueue();
+            mTemperature.setValue(temperatureChar.getFloatValue(Data.FORMAT_FLOAT, 0)/ 10);
+            return true;
+        }
+
+        public boolean readDate() {
+            if(currentTimeChar == null){
+                return false;
+            }
+            readCharacteristic(currentTimeChar).with((device, data) -> {
+                data.getIntValue(Data.FORMAT_UINT16, 0);
+                data.getIntValue(Data.FORMAT_UINT8, 2);
+                data.getIntValue(Data.FORMAT_UINT8, 3);
+                data.getIntValue(Data.FORMAT_UINT8, 4);
+                data.getIntValue(Data.FORMAT_UINT8, 5);
+                data.getIntValue(Data.FORMAT_UINT8, 6);
+            }).enqueue();
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.YEAR, currentTimeChar.getIntValue(Data.FORMAT_UINT16, 0));
+            calendar.set(Calendar.MONTH, currentTimeChar.getIntValue(Data.FORMAT_UINT8, 2));
+            calendar.set(Calendar.DAY_OF_MONTH, currentTimeChar.getIntValue(Data.FORMAT_UINT8, 3));
+            calendar.set(Calendar.HOUR, currentTimeChar.getIntValue(Data.FORMAT_UINT8, 4));
+            calendar.set(Calendar.MINUTE, currentTimeChar.getIntValue(Data.FORMAT_UINT8, 5));
+            calendar.set(Calendar.SECOND, currentTimeChar.getIntValue(Data.FORMAT_UINT8, 6));
+            mDate.setValue(calendar);
+            return true;
         }
     }
 }

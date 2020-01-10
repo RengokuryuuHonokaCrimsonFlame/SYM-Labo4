@@ -16,6 +16,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -63,6 +65,16 @@ public class BleActivity extends BaseTemplateActivity {
     private Handler handler = null;
     private boolean isScanning = false;
 
+    //Interface
+    private TextView sync;
+    private Button synchronize;
+    private TextView temperature;
+    private Button get_temp;
+    private TextView nbAppuis;
+    private EditText valeur;
+    private Button envoyer;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,6 +91,24 @@ public class BleActivity extends BaseTemplateActivity {
         this.scanPanel = findViewById(R.id.ble_scan);
         this.scanResults = findViewById(R.id.ble_scanresults);
         this.emptyScanResults = findViewById(R.id.ble_scanresults_empty);
+
+        this.sync = findViewById(R.id.sync);
+        this.synchronize = findViewById(R.id.synchronize);
+        this.temperature = findViewById(R.id.temperature);
+        this.get_temp = findViewById(R.id.get_temp);
+        this.nbAppuis = findViewById(R.id.nbAppuis);
+        this.valeur = findViewById(R.id.valeur);
+        this.envoyer = findViewById(R.id.envoyer);
+
+        this.synchronize.setOnClickListener((v) -> {
+            if(bleViewModel.readTemperature()) {
+                runOnUiThread(() -> {
+                    //we connect to the clicked device
+                    this.bleViewModel.getmTemperature().observe(this, (temperature) -> {
+                    });
+                });
+            }
+        });
 
         //manage scanned item
         this.scanResultsAdapter = new ResultsAdapter(this);
@@ -103,6 +133,17 @@ public class BleActivity extends BaseTemplateActivity {
         //ble events
         this.bleViewModel.isConnected().observe(this, (isConnected) -> {
             updateGui();
+        });
+
+        this.get_temp.setOnClickListener((v) -> {
+            if(bleViewModel.readTemperature()) {
+                runOnUiThread(() -> {
+                    //we connect to the clicked device
+                    this.bleViewModel.getmTemperature().observe(this, (temperature) -> {
+                        this.temperature.setText("T : " + this.bleViewModel.getmTemperature().getValue() + "°C");
+                    });
+                });
+            }
         });
     }
 
