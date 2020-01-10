@@ -207,6 +207,14 @@ public class BleOperationsViewModel extends AndroidViewModel {
                     Dans notre cas il s'agit de s'enregistrer pour recevoir les notifications proposées par certaines
                     caractéristiques, on en profitera aussi pour mettre en place les callbacks correspondants.
                  */
+                setNotificationCallback(currentTimeChar);
+                setNotificationCallback(buttonClickChar);
+
+                //writeCharacteristic(integerChar, ).enqueue();
+                //writeCharacteristic(currentTimeChar, ).enqueue();
+
+                enableNotifications(currentTimeChar).enqueue();
+                enableNotifications(buttonClickChar).enqueue();
             }
 
             @Override
@@ -228,6 +236,7 @@ public class BleOperationsViewModel extends AndroidViewModel {
                 des MutableLiveData
                 On placera des méthodes similaires pour les autres opérations...
             */
+            readCharacteristic(temperatureChar).enqueue();
             return false; //FIXME
         }
     }
