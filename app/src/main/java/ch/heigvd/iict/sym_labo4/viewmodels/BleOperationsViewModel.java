@@ -17,6 +17,7 @@ import java.util.UUID;
 
 import no.nordicsemi.android.ble.BleManager;
 import no.nordicsemi.android.ble.BleManagerCallbacks;
+import no.nordicsemi.android.ble.data.Data;
 
 public class BleOperationsViewModel extends AndroidViewModel {
 
@@ -165,8 +166,8 @@ public class BleOperationsViewModel extends AndroidViewModel {
                 Log.d(TAG, "isRequiredServiceSupported - discovered services:");
 
                 UUID timeServiceUUID = UUID.fromString("00001805-0000-1000-8000-00805f9b34fb");
-                UUID symServiceUUID = UUID.fromString("3c0a1000-281d-4b48-b2a7-f15579a1c38f ");
-                UUID currentTimeCharUUID = UUID.fromString("00002A2B-0000-1000-8000-00805f9b34f");
+                UUID symServiceUUID = UUID.fromString("3c0a1000-281d-4b48-b2a7-f15579a1c38f");
+                UUID currentTimeCharUUID = UUID.fromString("00002a2b-0000-1000-8000-00805f9b34fb");
                 UUID integerCharUUID = UUID.fromString("3c0a1001-281d-4b48-b2a7-f15579a1c38f");
                 UUID temperatureCharUUID = UUID.fromString("3c0a1002-281d-4b48-b2a7-f15579a1c38f");
                 UUID buttonClickCharUUID = UUID.fromString("3c0a1003-281d-4b48-b2a7-f15579a1c38f");
@@ -207,11 +208,14 @@ public class BleOperationsViewModel extends AndroidViewModel {
                     Dans notre cas il s'agit de s'enregistrer pour recevoir les notifications proposées par certaines
                     caractéristiques, on en profitera aussi pour mettre en place les callbacks correspondants.
                  */
-                setNotificationCallback(currentTimeChar);
-                setNotificationCallback(buttonClickChar);
 
-                //writeCharacteristic(integerChar, ).enqueue();
-                //writeCharacteristic(currentTimeChar, ).enqueue();
+                setNotificationCallback(currentTimeChar).with((device, data) -> {
+
+                });
+                setNotificationCallback(buttonClickChar).with((device, data) -> {
+                    Integer dat = data.getIntValue(Data.FORMAT_UINT8, 0);
+
+                });
 
                 enableNotifications(currentTimeChar).enqueue();
                 enableNotifications(buttonClickChar).enqueue();
@@ -236,7 +240,6 @@ public class BleOperationsViewModel extends AndroidViewModel {
                 des MutableLiveData
                 On placera des méthodes similaires pour les autres opérations...
             */
-            readCharacteristic(temperatureChar).enqueue();
             return false; //FIXME
         }
     }
