@@ -20,10 +20,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.lifecycle.ViewModelProviders;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
@@ -141,6 +143,23 @@ public class BleActivity extends BaseTemplateActivity {
                         this.temperature.setText("T : " + this.bleViewModel.getmTemperature().getValue() + "°C");
                     });
                 });
+            }
+        });
+
+        this.synchronize.setOnClickListener((v) -> {
+            if(!bleViewModel.writeDate(Calendar.getInstance())){
+                Toast.makeText(getApplicationContext(),"Echec de synchronisation",Toast.LENGTH_LONG).show();
+            }
+        });
+
+        this.envoyer.setOnClickListener((v) ->{
+            try{
+                Integer i = Integer.parseInt(valeur.getText().toString());
+                if(bleViewModel.writeInteger(i)){
+                    Toast.makeText(getApplicationContext(),"Echec d'envois de données",Toast.LENGTH_LONG).show();
+                }
+            }catch (Exception e){
+                Toast.makeText(getApplicationContext(),"N'accepte que les entiers",Toast.LENGTH_LONG).show();
             }
         });
     }
