@@ -22,6 +22,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import java.util.ArrayList;
@@ -135,6 +136,10 @@ public class BleActivity extends BaseTemplateActivity {
             updateGui();
         });
 
+        this.bleViewModel.getmNBAppuis().observe(this, (nbConnected) -> {
+            updateGui();
+        });
+
         this.get_temp.setOnClickListener((v) -> {
             if(bleViewModel.readTemperature()) {
                 runOnUiThread(() -> {
@@ -209,6 +214,14 @@ public class BleActivity extends BaseTemplateActivity {
     private void updateGui() {
         Boolean isConnected = this.bleViewModel.isConnected().getValue();
         if(isConnected != null && isConnected) {
+            Integer nbClicks = 0;
+
+            if (this.bleViewModel.getmNBAppuis().getValue() != null){
+                nbClicks = this.bleViewModel.getmNBAppuis().getValue();
+            }
+
+            nbAppuis.setText(nbClicks.toString());
+
             this.scanPanel.setVisibility(View.GONE);
             this.operationPanel.setVisibility(View.VISIBLE);
 

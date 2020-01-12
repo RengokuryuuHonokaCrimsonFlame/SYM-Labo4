@@ -247,11 +247,11 @@ public class BleOperationsViewModel extends AndroidViewModel {
                  */
 
                 setNotificationCallback(currentTimeChar).with((device, data) -> {
-
+                    readDate();
                 });
-                setNotificationCallback(buttonClickChar).with((device, data) -> {
-                    Integer dat = data.getIntValue(Data.FORMAT_UINT8, 0);
 
+                setNotificationCallback(buttonClickChar).with((device, data) -> {
+                    readNbButtonClicked();
                 });
 
                 enableNotifications(currentTimeChar).enqueue();
