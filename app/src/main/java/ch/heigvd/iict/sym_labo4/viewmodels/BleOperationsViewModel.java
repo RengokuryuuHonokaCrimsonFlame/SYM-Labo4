@@ -14,7 +14,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.UUID;
 
 import no.nordicsemi.android.ble.BleManager;
@@ -236,16 +235,15 @@ public class BleOperationsViewModel extends AndroidViewModel {
 
             @Override
             protected void initialize() {
-                setNotificationCallback(currentTimeChar).with((device, data) -> {
-                    readDate();
-                });
+                setNotificationCallback(currentTimeChar).with((device, data) -> readDate());
 
-                setNotificationCallback(buttonClickChar).with((device, data) -> {
-                    readNbButtonClicked();
-                });
+                setNotificationCallback(buttonClickChar).with((device, data) -> readNbButtonClicked());
+
+                setNotificationCallback(temperatureChar).with((device, data) -> readTemperature());
 
                 enableNotifications(currentTimeChar).enqueue();
                 enableNotifications(buttonClickChar).enqueue();
+                enableNotifications(temperatureChar).enqueue();
             }
 
             @Override
@@ -265,27 +263,22 @@ public class BleOperationsViewModel extends AndroidViewModel {
             if(temperatureChar.getValue() == null){
                 return false;
             }
-            readCharacteristic(temperatureChar).with((device, data) -> {
-                data.getIntValue(Data.FORMAT_UINT16, 0);
-            }).enqueue();
+            readCharacteristic(temperatureChar).with((device, data) -> data.getIntValue(Data.FORMAT_UINT16, 0)).enqueue();
             mTemperature.setValue(temperatureChar.getFloatValue(Data.FORMAT_FLOAT, 0)/ 10);
             return true;
         }
 
-        public boolean readNbButtonClicked(){
+        public void readNbButtonClicked(){
             if(buttonClickChar == null){
-                return false;
+                return;
             }
-            readCharacteristic(buttonClickChar).with((device, data) -> {
-                data.getIntValue(Data.FORMAT_UINT8, 0);
-            }).enqueue();
+            readCharacteristic(buttonClickChar).with((device, data) -> data.getIntValue(Data.FORMAT_UINT8, 0)).enqueue();
             mNbAppuis.setValue(buttonClickChar.getIntValue(Data.FORMAT_UINT8, 0));
-            return true;
         }
 
-        public boolean readDate() {
+        public void readDate() {
             if(currentTimeChar == null){
-                return false;
+                return;
             }
             readCharacteristic(currentTimeChar).with((device, data) -> {
                 data.getIntValue(Data.FORMAT_UINT16, 0);
@@ -303,7 +296,6 @@ public class BleOperationsViewModel extends AndroidViewModel {
             calendar.set(Calendar.MINUTE, currentTimeChar.getIntValue(Data.FORMAT_UINT8, 5));
             calendar.set(Calendar.SECOND, currentTimeChar.getIntValue(Data.FORMAT_UINT8, 6));
             mDate.setValue(calendar);
-            return true;
         }
     }
 }
