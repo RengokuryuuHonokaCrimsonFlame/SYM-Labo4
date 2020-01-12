@@ -131,23 +131,15 @@ public class BleActivity extends BaseTemplateActivity {
         }));
 
         //ble events
-        this.bleViewModel.isConnected().observe(this, (isConnected) -> {
-            updateGui();
-        });
+        this.bleViewModel.isConnected().observe(this, (isConnected) -> updateGui());
 
-        this.bleViewModel.getmNBAppuis().observe(this, (nbConnected) -> {
-            updateGui();
-        });
+        this.bleViewModel.getmNBAppuis().observe(this, (nbConnected) -> getNbClicks());
 
         this.get_temp.setOnClickListener((v) -> {
-            if(this.bleViewModel.readTemperature()) {
-                runOnUiThread(() -> {
-                    //we connect to the clicked device
-                    this.bleViewModel.getmTemperature().observe(this, (temp) -> {
-                        String txt = "T : " + this.bleViewModel.getmTemperature().getValue() + "°C";
-                        temperature.setText(txt);
-                    });
-                });
+            bleViewModel.readTemperature();
+            if (this.bleViewModel.getmTemperature().getValue() != null) {
+                String temp = this.bleViewModel.getmTemperature().getValue().toString() + " °C";
+                temperature.setText(temp);
             }
         });
 
@@ -170,6 +162,14 @@ public class BleActivity extends BaseTemplateActivity {
                 Toast.makeText(getApplicationContext(),"N'accepte que les entiers",Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    private void getNbClicks(){
+        Integer nbClicks = 0;
+        if (this.bleViewModel.getmNBAppuis().getValue() != null){
+            nbClicks = this.bleViewModel.getmNBAppuis().getValue();
+        }
+        nbAppuis.setText(nbClicks.toString());
     }
 
     @Override
@@ -217,14 +217,6 @@ public class BleActivity extends BaseTemplateActivity {
     private void updateGui() {
         Boolean isConnected = this.bleViewModel.isConnected().getValue();
         if(isConnected != null && isConnected) {
-            Integer nbClicks = 0;
-
-            if (this.bleViewModel.getmNBAppuis().getValue() != null){
-                nbClicks = this.bleViewModel.getmNBAppuis().getValue();
-            }
-
-            nbAppuis.setText(nbClicks.toString());
-
             this.scanPanel.setVisibility(View.GONE);
             this.operationPanel.setVisibility(View.VISIBLE);
 

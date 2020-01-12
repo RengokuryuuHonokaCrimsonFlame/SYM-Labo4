@@ -236,14 +236,10 @@ public class BleOperationsViewModel extends AndroidViewModel {
             @Override
             protected void initialize() {
                 setNotificationCallback(currentTimeChar).with((device, data) -> readDate());
-
                 setNotificationCallback(buttonClickChar).with((device, data) -> readNbButtonClicked());
-
-                setNotificationCallback(temperatureChar).with((device, data) -> readTemperature());
 
                 enableNotifications(currentTimeChar).enqueue();
                 enableNotifications(buttonClickChar).enqueue();
-                enableNotifications(temperatureChar).enqueue();
             }
 
             @Override
@@ -260,19 +256,12 @@ public class BleOperationsViewModel extends AndroidViewModel {
         };
 
         public boolean readTemperature() {
-            if(temperatureChar.getValue() == null){
-                return false;
-            }
-            readCharacteristic(temperatureChar).with((device, data) -> data.getIntValue(Data.FORMAT_UINT16, 0)).enqueue();
-            mTemperature.setValue(temperatureChar.getFloatValue(Data.FORMAT_FLOAT, 0)/ 10);
+            readCharacteristic(temperatureChar).with((device, data) ->
+                    mTemperature.postValue((float)data.getIntValue(Data.FORMAT_UINT16, 0) / 10)).enqueue();
             return true;
         }
 
         public void readNbButtonClicked(){
-            if(buttonClickChar == null){
-                return;
-            }
-            readCharacteristic(buttonClickChar).with((device, data) -> data.getIntValue(Data.FORMAT_UINT8, 0)).enqueue();
             mNbAppuis.setValue(buttonClickChar.getIntValue(Data.FORMAT_UINT8, 0));
         }
 
