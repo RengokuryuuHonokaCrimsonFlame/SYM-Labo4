@@ -22,7 +22,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import java.util.ArrayList;
@@ -141,11 +140,12 @@ public class BleActivity extends BaseTemplateActivity {
         });
 
         this.get_temp.setOnClickListener((v) -> {
-            if(bleViewModel.readTemperature()) {
+            if(this.bleViewModel.readTemperature()) {
                 runOnUiThread(() -> {
                     //we connect to the clicked device
-                    this.bleViewModel.getmTemperature().observe(this, (temperature) -> {
-                        this.temperature.setText("T : " + this.bleViewModel.getmTemperature().getValue() + "°C");
+                    this.bleViewModel.getmTemperature().observe(this, (temp) -> {
+                        String txt = "T : " + this.bleViewModel.getmTemperature().getValue() + "°C";
+                        temperature.setText(txt);
                     });
                 });
             }
@@ -155,12 +155,15 @@ public class BleActivity extends BaseTemplateActivity {
             if(!bleViewModel.writeDate(Calendar.getInstance())){
                 Toast.makeText(getApplicationContext(),"Echec de synchronisation",Toast.LENGTH_LONG).show();
             }
+            else if (this.bleViewModel.getmDate().getValue() != null){
+                sync.setText(this.bleViewModel.getmDate().getValue().getTime().toString());
+            }
         });
 
         this.envoyer.setOnClickListener((v) ->{
             try{
                 Integer i = Integer.parseInt(valeur.getText().toString());
-                if(bleViewModel.writeInteger(i)){
+                if(!bleViewModel.writeInteger(i)){
                     Toast.makeText(getApplicationContext(),"Echec d'envois de données",Toast.LENGTH_LONG).show();
                 }
             }catch (Exception e){
